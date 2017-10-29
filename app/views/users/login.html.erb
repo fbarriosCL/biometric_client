@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Login biometric</h1>
+
+<%= form_for :user, method: :POST, url: authentication_user_path do |form| %>
+<div class="field">
+  <%= form.label :email %>
+  <%= form.text_field :email, id: :user_email %>
+</div>
+
+<div class="field">
+  <%= form.label :image %>
+  <%= form.file_field :image, id: :user_image %>
+</div>
+
+<div class="actions">
+  <%= form.submit "Check" %>
+</div>
+<% end %>
