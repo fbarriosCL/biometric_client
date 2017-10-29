@@ -2,7 +2,7 @@ class User
   attr_accessor :id, :email, :image
 
   def initialize(options = {})
-    @url = 'http://localhost:3000'
+    @url   = Settings.biometric_auth.url
     @id    = options['id']
     @email = options['email']
     @image = options['image']
