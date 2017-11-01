@@ -1,0 +1,44 @@
+version: '2'
+services:
+  biometric-client-db:
+    image: postgres:9.5.3
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_USER=biometric-client
+      - POSTGRES_DB=biometric-client_development
+    volumes_from:
+      - biometric-client-data
+  biometric-client-data:
+    image: postgres:9.5.3
+    volumes:
+      - /var/lib/postgresql
+    command: "true"
+  biometric-client-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.development
+    depends_on:
+      - biometric-client-db
+    environment:
+      - PASSENGER_APP_ENV=development
+    command: ["./wait-for-postgres.sh", "biometric-client-db", "bin/rails", "db:migrate"]
+  biometric-client:
+    build:
+      context: .
+      dockerfile: Dockerfile.development
+    depends_on:
+      - biometric-client-db
+      - biometric-client-migrate
+    ports:
+      - "80"
+    environment:
+      - PASSENGER_APP_ENV=development
+      - VIRTUAL_HOST=biometric-client.dockerapp.com
+      - VIRTUAL_PORT=80
+      - RAILS_LOG_TO_STDOUT=true
+    volumes:
+      - .:/home/app/webapp
+networks:
+  default:
+    external:
+      name: traefik_webgateway
